@@ -11,6 +11,11 @@ class Company extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected static function newFactory()
+    {
+        return \Modules\Company\Database\Factories\CompanyFactory::new();
+    }
+
     protected $fillable = [
         'name',
         'domain_slug',
@@ -47,11 +52,27 @@ class Company extends Model
     }
 
     /**
+     * Get the company administrator.
+     */
+    public function admin()
+    {
+        return $this->hasOne(User::class)->where('role', 'company_admin');
+    }
+
+    /**
      * Get all WhatsApp numbers belonging to this company.
      */
     public function whatsappNumbers()
     {
         return $this->hasMany(WhatsappNumber::class);
+    }
+
+    /**
+     * Get all Telegram bots belonging to this company.
+     */
+    public function telegramBots()
+    {
+        return $this->hasMany(TelegramBot::class);
     }
 
     /**
@@ -76,5 +97,80 @@ class Company extends Model
     public function getUsersCountAttribute(): int
     {
         return $this->users()->count();
+    }
+
+    /**
+     * Get the active subscription for the company.
+     */
+    public function subscription()
+    {
+        return $this->hasOne(\Modules\Plans\Models\Subscription::class)->where('status', 'active')->latestOfMany();
+    }
+
+    /**
+     * Get all subscription history.
+     */
+    public function subscriptions()
+    {
+        return $this->hasMany(\Modules\Plans\Models\Subscription::class);
+    }
+
+    /**
+     * Helper to get active plan details.
+     */
+    public function activePlan()
+    {
+        return $this->subscription?->plan;
+    }
+
+    /**
+     * Check if the company has reached its agent limit.
+     */
+    public function hasReachedAgentLimit(): bool
+    {
+        $plan = $this->activePlan();
+        if (!$plan) {
+            return false;
+        }
+
+        if ($plan->max_agents === -1) {
+            return false;
+        }
+
+        return $this->users()->count() >= $plan->max_agents;
+    }
+
+    /**
+     * Check if the company has reached its WhatsApp QR numbers limit.
+     */
+    public function hasReachedWhatsappLimit(): bool
+    {
+        $plan = $this->activePlan();
+        if (!$plan) {
+            return false;
+        }
+
+        if ($plan->max_qr_numbers === -1) {
+            return false;
+        }
+
+        return $this->whatsappNumbers()->where('type', 'qr')->count() >= $plan->max_qr_numbers;
+    }
+
+    /**
+     * Check if the company has reached its Telegram bots limit.
+     */
+    public function hasReachedTelegramLimit(): bool
+    {
+        $plan = $this->activePlan();
+        if (!$plan) {
+            return false;
+        }
+
+        if ($plan->max_telegram_bots === -1) {
+            return false;
+        }
+
+        return $this->telegramBots()->count() >= $plan->max_telegram_bots;
     }
 }

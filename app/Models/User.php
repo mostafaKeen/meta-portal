@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -11,8 +11,10 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
+    public $plainPassword;
+
     use HasApiTokens;
 
     /** @use HasFactory<UserFactory> */
@@ -87,5 +89,15 @@ class User extends Authenticatable
     public function isAgent()
     {
         return $this->role === 'agent';
+    }
+
+    /**
+     * The WhatsApp numbers that are assigned to the user.
+     */
+    public function whatsappNumbers()
+    {
+        return $this->belongsToMany(\Modules\Company\Models\WhatsappNumber::class, 'whatsapp_number_user')
+            ->withPivot('access_type')
+            ->withTimestamps();
     }
 }

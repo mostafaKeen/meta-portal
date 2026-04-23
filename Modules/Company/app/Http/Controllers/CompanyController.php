@@ -65,13 +65,15 @@ class CompanyController extends Controller
             $company = Company::create($data);
 
             // Create Primary Admin User
-            User::create([
+            $admin = new User([
                 'name' => $data['admin_name'],
                 'email' => $data['admin_email'],
                 'password' => Hash::make($data['admin_password']),
                 'company_id' => $company->id,
                 'role' => 'company_admin',
             ]);
+            $admin->plainPassword = $data['admin_password'];
+            $admin->save();
 
             DB::commit();
 
@@ -136,14 +138,18 @@ class CompanyController extends Controller
             }
 
             if ($admin) {
+                // We don't necessarily send a welcome email on update unless password changed and we want to notify
+                // But the requirement says "any user added", so we focus on creation.
                 $admin->update($userData);
             } else {
                 // Creation fallback if no admin exists for some reason
-                User::create(array_merge($userData, [
+                $admin = new User(array_merge($userData, [
                     'company_id' => $company->id,
                     'role' => 'company_admin',
                     'password' => Hash::make($data['admin_password'] ?? 'password'),
                 ]));
+                $admin->plainPassword = $data['admin_password'] ?? 'password';
+                $admin->save();
             }
 
             DB::commit();

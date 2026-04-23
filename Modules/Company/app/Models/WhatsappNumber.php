@@ -3,10 +3,17 @@
 namespace Modules\Company\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class WhatsappNumber extends Model
 {
+    use HasFactory;
+
+    protected static function newFactory()
+    {
+        return \Modules\Company\Database\Factories\WhatsappNumberFactory::new();
+    }
     protected $fillable = [
         'company_id',
         'type',
@@ -54,5 +61,15 @@ class WhatsappNumber extends Model
     public function isQr(): bool
     {
         return $this->type === 'qr';
+    }
+
+    /**
+     * The users that are assigned to this WhatsApp number.
+     */
+    public function users()
+    {
+        return $this->belongsToMany(\App\Models\User::class, 'whatsapp_number_user')
+            ->withPivot('access_type')
+            ->withTimestamps();
     }
 }

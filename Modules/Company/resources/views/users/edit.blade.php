@@ -49,14 +49,61 @@
                         
                         <div class="mb-4">
                             <label for="password" class="block text-sm font-medium text-gray-700">New Password</label>
-                            <input type="password" name="password" id="password" autocomplete="new-password" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#2563eb] focus:ring focus:ring-[#2563eb] focus:ring-opacity-50">
+                            <input type="password" name="password" id="password" autocomplete="new-password" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#4169E1] focus:ring focus:ring-[#4169E1] focus:ring-opacity-50">
                         </div>
 
                         <div>
                             <label for="password_confirmation" class="block text-sm font-medium text-gray-700">Confirm New Password</label>
-                            <input type="password" name="password_confirmation" id="password_confirmation" autocomplete="new-password" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#2563eb] focus:ring focus:ring-[#2563eb] focus:ring-opacity-50">
+                            <input type="password" name="password_confirmation" id="password_confirmation" autocomplete="new-password" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#4169E1] focus:ring focus:ring-[#4169E1] focus:ring-opacity-50">
                         </div>
                     </div>
+
+                    @if($user->isAgent())
+                    <div class="border-t pt-6 mt-6">
+                        <div class="flex items-center space-x-2 mb-4">
+                            <svg class="w-5 h-5 text-[#4169E1]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                            <h4 class="text-lg font-semibold text-gray-900">WhatsApp Access Control</h4>
+                        </div>
+                        <p class="text-sm text-gray-500 mb-6">Assign specific WhatsApp numbers to this agent and define their permission level.</p>
+
+                        <div class="space-y-4">
+                            @forelse($whatsappNumbers as $number)
+                                <div class="flex items-center justify-between p-4 rounded-xl border {{ isset($assignedNumbers[$number->id]) ? 'border-[#4169E1] bg-blue-50/30' : 'border-gray-100 bg-gray-50/50' }} transition-all duration-200">
+                                    <div class="flex items-center space-x-4">
+                                        <div class="flex items-center h-5">
+                                            <input type="hidden" name="whatsapp_numbers[{{ $number->id }}][assigned]" value="0">
+                                            <input id="wa_{{ $number->id }}" name="whatsapp_numbers[{{ $number->id }}][assigned]" type="checkbox" value="1" {{ isset($assignedNumbers[$number->id]) ? 'checked' : '' }}
+                                                class="h-5 w-5 text-[#4169E1] border-gray-300 rounded focus:ring-[#4169E1] cursor-pointer">
+                                        </div>
+                                        <div class="ml-3">
+                                            <label for="wa_{{ $number->id }}" class="text-sm font-bold text-gray-900 cursor-pointer block">
+                                                {{ $number->phone_number }}
+                                                <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium {{ $number->isApi() ? 'bg-purple-100 text-purple-800' : 'bg-green-100 text-green-800' }}">
+                                                    {{ strtoupper($number->type) }}
+                                                </span>
+                                            </label>
+                                            <p class="text-xs text-gray-500">{{ $number->app_name ?? $number->session_name ?? 'Untitled Connection' }}</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center space-x-3">
+                                        <span class="text-xs font-medium text-gray-400">Permissions:</span>
+                                        <select name="whatsapp_numbers[{{ $number->id }}][access_type]" 
+                                            class="text-xs font-medium rounded-lg border-gray-200 focus:border-[#4169E1] focus:ring-[#4169E1] bg-white shadow-sm py-1.5 pl-3 pr-8">
+                                            <option value="view" {{ (isset($assignedNumbers[$number->id]) && $assignedNumbers[$number->id] == 'view') ? 'selected' : '' }}>View Only</option>
+                                            <option value="edit" {{ (isset($assignedNumbers[$number->id]) && $assignedNumbers[$number->id] == 'edit') ? 'selected' : '' }}>Full Access (Edit)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            @empty
+                                <div class="text-center py-8 bg-gray-50 rounded-xl border border-dashed border-gray-300">
+                                    <p class="text-sm text-gray-500">No WhatsApp numbers configured for this company.</p>
+                                    <a href="{{ route('company.whatsapp.create') }}" class="text-[#4169E1] text-sm font-semibold hover:underline mt-2 inline-block">Add your first number →</a>
+                                </div>
+                            @endforelse
+                        </div>
+                    </div>
+                    @endif
                 </div>
 
                 <div class="mt-8 flex justify-end space-x-3">

@@ -17,9 +17,19 @@
                     <button type="submit" class="px-4 py-2 bg-gray-100 border border-l-0 border-gray-300 rounded-r-lg text-gray-700 hover:bg-gray-200">Search</button>
                 </form>
 
-                <a href="{{ route('company.users.create') }}" class="px-4 py-2 bg-[#2563eb] border border-transparent rounded-lg font-semibold text-white uppercase tracking-widest hover:bg-blue-700 transition">
-                    Add New User
-                </a>
+                <div class="flex flex-col">
+                    <a href="{{ route('company.users.create') }}" class="px-4 py-2 bg-[#2563eb] border border-transparent rounded-lg font-semibold text-white uppercase tracking-widest hover:bg-blue-700 transition text-center">
+                        Add New User
+                    </a>
+                    @php
+                        $activePlan = auth()->user()->company->activePlan();
+                    @endphp
+                    @if($activePlan)
+                        <span class="text-xs mt-1 text-right font-semibold {{ auth()->user()->company->hasReachedAgentLimit() ? 'text-red-500' : 'text-gray-400' }}">
+                            Usage: {{ auth()->user()->company->users()->count() }} / {{ $activePlan->max_agents == -1 ? 'Unlimited' : $activePlan->max_agents }} Users
+                        </span>
+                    @endif
+                </div>
             </div>
 
             <div class="overflow-x-auto">

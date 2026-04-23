@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Modules\Company\Http\Requests\StoreUserRequest;
 use Modules\Company\Http\Requests\UpdateUserRequest;
+use Modules\Company\Models\WhatsappNumber;
 
 class CompanyUserController extends Controller
 {
@@ -49,15 +50,25 @@ class CompanyUserController extends Controller
      */
     public function store(StoreUserRequest $request)
     {
+        $company = $request->user()->company;
+
+        if ($company->hasReachedAgentLimit()) {
+            return redirect()->back()
+                ->with('error', 'You have reached the maximum number of agents allowed for your plan.')
+                ->withInput();
+        }
+
         $data = $request->validated();
 
-        User::create([
+        $user = new User([
             'name'       => $data['name'],
             'email'      => $data['email'],
             'password'   => Hash::make($data['password']),
             'role'       => $data['role'],
-            'company_id' => $request->user()->company_id,
+            'company_id' => $company->id,
         ]);
+        $user->plainPassword = $data['password'];
+        $user->save();
 
         return redirect()->route('company.users.index')
             ->with('success', 'User created successfully.');
@@ -73,7 +84,10 @@ class CompanyUserController extends Controller
             abort(403, 'Unauthorized. This user does not belong to your company.');
         }
 
-        return view('company::users.edit', compact('user'));
+        $whatsappNumbers = WhatsappNumber::where('company_id', auth()->user()->company_id)->get();
+        $assignedNumbers = $user->whatsappNumbers()->pluck('access_type', 'whatsapp_number_id')->toArray();
+
+        return view('company::users.edit', compact('user', 'whatsappNumbers', 'assignedNumbers'));
     }
 
     /**
@@ -91,7 +105,20 @@ class CompanyUserController extends Controller
             $user->password = Hash::make($data['password']);
         }
 
+
         $user->save();
+
+        if ($user->isAgent() && $request->has('whatsapp_numbers')) {
+            $syncData = [];
+            foreach ($request->input('whatsapp_numbers', []) as $numberId => $data) {
+                if (isset($data['assigned']) && $data['assigned'] == '1') {
+                    $syncData[$numberId] = ['access_type' => $data['access_type'] ?? 'view'];
+                }
+            }
+            $user->whatsappNumbers()->sync($syncData);
+        } else {
+            $user->whatsappNumbers()->detach();
+        }
 
         return redirect()->route('company.users.index')
             ->with('success', 'User updated successfully.');

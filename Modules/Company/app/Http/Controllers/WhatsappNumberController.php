@@ -33,8 +33,16 @@ class WhatsappNumberController extends Controller
      */
     public function store(StoreWhatsappNumberRequest $request)
     {
+        $company = auth()->user()->company;
         $data = $request->validated();
-        $data['company_id'] = auth()->user()->company_id;
+
+        if (isset($data['type']) && $data['type'] === 'qr' && $company->hasReachedWhatsappLimit()) {
+            return redirect()->back()
+                ->with('error', 'You have reached the maximum number of WhatsApp QR numbers allowed for your plan.')
+                ->withInput();
+        }
+
+        $data['company_id'] = $company->id;
 
         WhatsappNumber::create($data);
 

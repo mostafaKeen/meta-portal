@@ -44,9 +44,6 @@ class CompanySettingsController extends Controller
             $data['logo'] = $request->file('logo')->store('companies/logos', 'public');
         }
 
-        // Ensure booleans for checkboxes
-        $data['qr']  = $request->boolean('qr');
-        $data['api'] = $request->boolean('api');
 
         $company->update($data);
 

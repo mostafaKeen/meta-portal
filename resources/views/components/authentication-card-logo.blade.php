@@ -1,6 +1,6 @@
-<a href="/">
-    <svg class="size-16" viewbox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M11.395 44.428C4.557 40.198 0 32.632 0 24 0 10.745 10.745 0 24 0a23.891 23.891 0 0113.997 4.502c-.2 17.907-11.097 33.245-26.602 39.926z" fill="#2563eb"/>
-        <path d="M14.134 45.885A23.914 23.914 0 0024 48c13.255 0 24-10.745 24-24 0-3.516-.756-6.856-2.115-9.866-4.659 15.143-16.608 27.092-31.75 31.751z" fill="#2563eb"/>
-    </svg>
+<a href="/" class="flex items-center space-x-3">
+    <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-[#4169E1] to-blue-900 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-blue-500/30">
+        M
+    </div>
+    <h1 class="text-2xl font-bold tracking-tight text-white">Meta<span class="text-[#4169E1]">Portal</span></h1>
 </a>
