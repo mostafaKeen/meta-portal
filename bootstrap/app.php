@@ -15,6 +15,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => \Modules\Company\Http\Middleware\RoleMiddleware::class,
         ]);
+
+        $middleware->validateCsrfTokens(except: [
+            'api/telegram/webhook/*',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

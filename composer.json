@@ -31,7 +31,9 @@
         "psr-4": {
             "App\\": "app/",
             "Modules\\Company\\": "Modules/Company/app/",
+            "Modules\\Telegram\\": "Modules/Telegram/app/",
             "Modules\\Company\\Database\\Factories\\": "Modules/Company/database/factories/",
+            "Modules\\Telegram\\Database\\Factories\\": "Modules/Telegram/database/factories/",
             "Modules\\Plans\\": "Modules/Plans/app/",
             "Modules\\Plans\\Database\\Factories\\": "Modules/Plans/database/factories/",
             "Modules\\Plans\\Database\\Seeders\\": "Modules/Plans/database/seeders/",

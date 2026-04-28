@@ -20,5 +20,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         \App\Models\User::observe(\App\Observers\UserObserver::class);
+
+        if (str_contains(config('app.url'), 'ngrok') || str_contains(config('app.url'), 'expose') || str_contains(config('app.url'), 'cloudflare')) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
     }
 }

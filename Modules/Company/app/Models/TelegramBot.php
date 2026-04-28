@@ -19,6 +19,11 @@ class TelegramBot extends Model
         return $this->belongsTo(Company::class);
     }
 
+    public function chats(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(\Modules\Telegram\Models\TelegramChat::class, 'bot_id');
+    }
+
     public function scopeActive($query)
     {
         return $query->where('status', 'active');
