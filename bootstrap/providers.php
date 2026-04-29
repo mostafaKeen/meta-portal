@@ -4,4 +4,6 @@ return [
     App\Providers\AppServiceProvider::class,
     App\Providers\FortifyServiceProvider::class,
     App\Providers\JetstreamServiceProvider::class,
+    Laravel\Reverb\ApplicationManagerServiceProvider::class,
+    Laravel\Reverb\ReverbServiceProvider::class,
 ];

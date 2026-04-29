@@ -8,4 +8,5 @@ Route::middleware(['auth', 'verified'])->prefix('telegram')->name('telegram.')->
     Route::get('/bots/{bot}/chats', [TelegramController::class, 'chats'])->name('chats');
     Route::get('/bots/{bot}/chats/{chat}', [TelegramController::class, 'showChat'])->name('show');
     Route::post('/bots/{bot}/chats/{chat}/send', [TelegramController::class, 'sendMessage'])->name('send');
+    Route::get('/bots/{bot}/chats/{chat}/new-messages', [TelegramController::class, 'newMessages'])->name('new-messages');
 });

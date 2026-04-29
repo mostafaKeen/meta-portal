@@ -22,9 +22,24 @@
     </style>
 </head>
 <body class="font-sans antialiased">
-    <div class="min-h-screen flex flex-col sm:flex-row">
+    <div class="min-h-screen flex flex-col sm:flex-row" x-data="{ mobileMenuOpen: false }">
+        <!-- Mobile Header -->
+        <div class="sm:hidden bg-gray-900 text-white p-4 flex items-center justify-between sticky top-0 z-50">
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-[#4169E1] to-blue-900 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-blue-500/20">
+                    M
+                </div>
+                <h1 class="text-lg font-bold tracking-tight text-white">Meta<span class="text-[#4169E1]">Portal</span></h1>
+            </div>
+            <button @click="mobileMenuOpen = !mobileMenuOpen" class="p-2 rounded-lg hover:bg-gray-800 transition-colors">
+                <svg x-show="!mobileMenuOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                <svg x-show="mobileMenuOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+
         <!-- Sidebar -->
-        <aside class="w-full sm:w-64 bg-gradient-to-b from-gray-900 to-black text-white flex-shrink-0 flex flex-col">
+        <aside :class="{'translate-x-0': mobileMenuOpen, '-translate-x-full': !mobileMenuOpen}" 
+               class="fixed inset-y-0 left-0 z-40 w-64 bg-gradient-to-b from-gray-900 to-black text-white transform transition-transform duration-300 ease-in-out sm:translate-x-0 sm:static sm:inset-auto sm:flex-shrink-0 flex flex-col">
             <div class="p-6 border-b border-gray-800">
                 <div class="flex items-center space-x-3">
                     <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-[#4169E1] to-blue-900 flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-blue-500/20">
@@ -167,9 +182,9 @@
         <!-- Main Content -->
         <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50">
             <!-- Header -->
-            <header class="bg-white border-b border-gray-200">
-                <div class="max-w-7xl mx-auto py-5 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-                    <h2 class="font-bold text-xl text-gray-900 leading-tight">
+            <header class="bg-white border-b border-gray-200 sticky top-0 sm:static z-30">
+                <div class="max-w-7xl mx-auto py-4 sm:py-5 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+                    <h2 class="font-bold text-lg sm:text-xl text-gray-900 leading-tight">
                         {{ $header ?? 'Dashboard' }}
                     </h2>
                     

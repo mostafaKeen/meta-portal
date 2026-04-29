@@ -109,7 +109,7 @@ class TelegramService
             }
 
             // Save outgoing message
-            return TelegramMessage::create([
+            $telegramMessage = TelegramMessage::create([
                 'bot_id' => $this->bot?->id,
                 'telegram_chat_id' => $chat?->id,
                 'direction' => 'out',
@@ -119,6 +119,11 @@ class TelegramService
                 'media_path' => $mediaPath,
                 'metadata' => $data,
             ]);
+
+            // Broadcast for real-time dashboard updates
+            broadcast(new \Modules\Telegram\Events\TelegramMessageBroadcasting($telegramMessage))->toOthers();
+
+            return $telegramMessage;
         }
 
         Log::error("Telegram {$method} failed", [
