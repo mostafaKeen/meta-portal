@@ -6,6 +6,8 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
+
 
 class Company extends Model
 {
@@ -30,11 +32,16 @@ class Company extends Model
         'b24_client_secret',
         'b24_access_token',
         'b24_refresh_token',
+        // Meta CAPI
+        'fb_pixel_id',
+        'fb_access_token',
+        'capi_outbound_token',
         // Status
         'status',
         'plan_id',
         'trial_ends_at',
     ];
+
 
     protected function casts(): array
     {
@@ -173,4 +180,15 @@ class Company extends Model
 
         return $this->telegramBots()->count() >= $plan->max_telegram_bots;
     }
+
+    /**
+     * Generate a unique Meta CAPI outbound token.
+     */
+    public function generateCapiToken(): string
+    {
+        $token = Str::random(64);
+        $this->update(['capi_outbound_token' => $token]);
+        return $token;
+    }
 }
+

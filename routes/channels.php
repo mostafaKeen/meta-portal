@@ -25,3 +25,7 @@ Broadcast::channel('company.{company_id}.bot.{bot_id}', function ($user, $compan
         'role' => $user->role,
     ];
 });
+
+Broadcast::channel('company.{company_id}', function ($user, $company_id) {
+    return (int) $user->company_id === (int) $company_id || $user->isSuperAdmin();
+});

@@ -1,0 +1,11 @@
+{
+    "name": "ConversionAPI",
+    "alias": "conversionapi",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\ConversionAPI\\Providers\\ConversionAPIServiceProvider"
+    ],
+    "files": []
+}

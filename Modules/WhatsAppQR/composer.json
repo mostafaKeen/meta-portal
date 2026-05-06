@@ -1,0 +1,30 @@
+{
+    "name": "nwidart/whatsappqr",
+    "description": "",
+    "authors": [
+        {
+            "name": "Nicolas Widart",
+            "email": "n.widart@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\WhatsAppQR\\": "app/",
+            "Modules\\WhatsAppQR\\Database\\Factories\\": "database/factories/",
+            "Modules\\WhatsAppQR\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\WhatsAppQR\\Tests\\": "tests/"
+        }
+    }
+}

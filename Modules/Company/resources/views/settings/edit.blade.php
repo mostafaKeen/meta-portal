@@ -67,7 +67,13 @@
                         </div>
 
                         <div>
+                            <label for="name" class="block text-sm font-medium text-gray-700">Company Name</label>
+                            <input type="text" name="name" id="name" value="{{ old('name', $company->name) }}" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-[#2563eb] focus:ring focus:ring-[#2563eb] focus:ring-opacity-50 text-sm">
+                        </div>
+
+                        <div>
                             <label for="email" class="block text-sm font-medium text-gray-700">Support Email</label>
+
                             <input type="email" name="email" id="email" value="{{ old('email', $company->email) }}" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-[#2563eb] focus:ring focus:ring-[#2563eb] focus:ring-opacity-50 text-sm">
                         </div>
 
@@ -89,8 +95,9 @@
                 </div>
             </div>
 
-            <!-- Column 2: Bitrix24 -->
-            <div class="xl:col-span-1">
+            <!-- Column 2: Bitrix24 & Meta CAPI -->
+            <div class="xl:col-span-1 space-y-6">
+                <!-- Bitrix24 -->
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                     <div class="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-indigo-50 to-blue-50">
                         <div class="flex items-center">
@@ -118,20 +125,65 @@
                             <label for="b24_client_secret" class="block text-sm font-medium text-gray-700">Application Key</label>
                             <input type="password" name="b24_client_secret" id="b24_client_secret" value="{{ old('b24_client_secret', $company->b24_client_secret) }}" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50 text-sm">
                         </div>
+                    </div>
+                </div>
 
-                        <!-- Info Box -->
-                        <div class="p-4 bg-amber-50 rounded-xl border border-amber-100">
-                            <div class="flex">
-                                <svg class="h-5 w-5 text-amber-500 mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                <div>
-                                    <p class="text-xs font-semibold text-amber-800">Heads up</p>
-                                    <p class="text-xs text-amber-700 mt-0.5">Changing REST credentials may require re-authenticating the Bitrix24 integration.</p>
-                                </div>
+                <!-- Meta Conversion API -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-indigo-50">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center mr-3">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                             </div>
+                            <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wide">Meta Conversion API</h3>
                         </div>
+                    </div>
+                    <div class="p-6 space-y-5">
+                        <div>
+                            <label for="fb_pixel_id" class="block text-sm font-medium text-gray-700">Meta Pixel ID</label>
+                            <input type="text" name="fb_pixel_id" id="fb_pixel_id" value="{{ old('fb_pixel_id', $company->fb_pixel_id) }}" placeholder="e.g. 1234567890" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 text-sm font-mono">
+                        </div>
+
+                        <div>
+                            <label for="fb_access_token" class="block text-sm font-medium text-gray-700">Conversion API Access Token</label>
+                            <textarea name="fb_access_token" id="fb_access_token" rows="3" placeholder="EAAB..." class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 text-sm font-mono">{{ old('fb_access_token', $company->fb_access_token) }}</textarea>
+                        </div>
+
+                        @if($company->capi_outbound_token)
+                        <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Bitrix24 Outbound Webhook URL</label>
+                            <div class="flex items-center space-x-2" x-data="{ copied: false }">
+                                <input type="text" id="capi_webhook_url" readonly value="{{ route('api.capi.webhook', $company->capi_outbound_token) }}" class="flex-1 bg-white border-gray-200 rounded-lg text-[10px] font-mono py-2 focus:ring-0 focus:border-gray-200">
+                                <button type="button" 
+                                    @click="
+                                        navigator.clipboard.writeText('{{ route('api.capi.webhook', $company->capi_outbound_token) }}');
+                                        copied = true;
+                                        setTimeout(() => copied = false, 2000)
+                                    "
+                                    class="p-2 rounded-lg transition-all duration-200"
+                                    :class="copied ? 'text-green-600 bg-green-50' : 'text-blue-600 hover:bg-blue-50'"
+                                >
+                                    <svg x-show="!copied" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path>
+                                    </svg>
+                                    <svg x-show="copied" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: none;">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <p class="text-[10px] text-gray-500 mt-2">Use this URL in Bitrix24 Automation Rules (Webhooks) to send events to Meta.</p>
+                        </div>
+                        @else
+                        <div class="p-4 bg-blue-50 rounded-xl border border-blue-100 flex items-center justify-between">
+                            <p class="text-xs text-blue-700">Outbound token not generated yet.</p>
+                            <a href="{{ route('capi.token.generate') }}" class="text-xs font-bold text-blue-600 hover:underline">Generate Token</a>
+                        </div>
+                        @endif
                     </div>
                 </div>
             </div>
+
         </div>
 
         <!-- Save Button -->

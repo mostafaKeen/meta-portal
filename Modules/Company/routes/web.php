@@ -26,7 +26,22 @@ Route::middleware(['auth', 'role:company_admin'])->prefix('company')->group(func
     Route::put('settings', [\Modules\Company\Http\Controllers\CompanySettingsController::class, 'update'])->name('company.settings.update');
 
     // WhatsApp Numbers
-    Route::resource('whatsapp', \Modules\Company\Http\Controllers\WhatsappNumberController::class)->names('company.whatsapp')->except(['show']);
+    Route::resource('whatsapp', \Modules\Company\Http\Controllers\WhatsappNumberController::class)->names('company.whatsapp');
+
+    // WhatsApp Chat Actions (web-based, for Blade UI)
+    Route::post('whatsapp/chat/send', [\Modules\WhatsAppQR\Http\Controllers\WhatsAppChatController::class, 'sendMessage'])->name('company.whatsapp.chat.send');
+    Route::post('whatsapp/chat/start', [\Modules\WhatsAppQR\Http\Controllers\WhatsAppChatController::class, 'startChat'])->name('company.whatsapp.chat.start');
+    Route::get('whatsapp/chat/{chatId}/messages', [\Modules\WhatsAppQR\Http\Controllers\WhatsAppChatController::class, 'getMessages'])->name('company.whatsapp.chat.messages');
+    
+    // QR polling endpoint (fallback when Echo/Reverb is down)
+    Route::get('whatsapp/{id}/qr-status', function ($id) {
+        $number = \Modules\Company\Models\WhatsappNumber::findOrFail($id);
+        if ($number->company_id !== auth()->user()->company_id) abort(403);
+        return response()->json([
+            'qr_code' => $number->qr_code,
+            'status' => $number->status,
+        ]);
+    })->name('company.whatsapp.qr-status');
 
     // Telegram Bots
     Route::resource('telegram', \Modules\Company\Http\Controllers\TelegramBotController::class)->names('company.telegram')->except(['show']);

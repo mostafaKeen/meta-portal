@@ -1,0 +1,11 @@
+{
+    "name": "WhatsAppQR",
+    "alias": "whatsappqr",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\WhatsAppQR\\Providers\\WhatsAppQRServiceProvider"
+    ],
+    "files": []
+}

@@ -32,6 +32,11 @@ class UpdateCompanySettingsRequest extends FormRequest
             'b24_domain'        => ['nullable', 'string', 'max:255'],
             'b24_client_id'     => ['nullable', 'string', 'max:255'],
             'b24_client_secret' => ['nullable', 'string', 'max:255'],
+
+            // Meta CAPI
+            'fb_pixel_id'       => ['nullable', 'string', 'max:255'],
+            'fb_access_token'   => ['nullable', 'string', 'max:2000'],
         ];
+
     }
 }

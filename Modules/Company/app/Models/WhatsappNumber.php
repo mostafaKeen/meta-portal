@@ -23,7 +23,13 @@ class WhatsappNumber extends Model
         'app_token',
         'session_name',
         'status',
+        'qr_code',
     ];
+
+    public function chats()
+    {
+        return $this->hasMany(\Modules\WhatsAppQR\Models\WhatsAppChat::class, 'whatsapp_number_id');
+    }
 
     protected function casts(): array
     {

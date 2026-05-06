@@ -1,5 +1,7 @@
 {
     "Company": true,
     "Plans": true,
-    "Telegram": true
+    "Telegram": true,
+    "WhatsAppQR": true,
+    "ConversionAPI": true
 }

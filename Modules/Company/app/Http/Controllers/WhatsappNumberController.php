@@ -44,10 +44,35 @@ class WhatsappNumberController extends Controller
 
         $data['company_id'] = $company->id;
 
-        WhatsappNumber::create($data);
+        if ($data['type'] === 'qr') {
+            $data['session_name'] = $data['session_name'] ?? 'session_' . $company->id . '_' . time();
+        }
+
+        $number = WhatsappNumber::create($data);
+
+        if ($number->type === 'qr') {
+            // Start the session in the Node engine
+            app(\Modules\WhatsAppQR\Services\WhatsAppService::class)->startSession($number->session_name);
+        }
 
         return redirect()->route('company.whatsapp.index')
             ->with('success', 'WhatsApp number added successfully.');
+    }
+
+    /**
+     * Display the specified number and its chats.
+     */
+    public function show(WhatsappNumber $whatsapp)
+    {
+        if ($whatsapp->company_id !== auth()->user()->company_id) {
+            abort(403);
+        }
+
+        $chats = $whatsapp->chats()->with(['messages' => function($q) {
+            $q->latest()->limit(50);
+        }])->latest('last_message_at')->get();
+
+        return view('company::whatsapp.show', compact('whatsapp', 'chats'));
     }
 
     /**
@@ -85,6 +110,11 @@ class WhatsappNumberController extends Controller
     {
         if ($whatsapp->company_id !== auth()->user()->company_id) {
             abort(403);
+        }
+
+        // Clean up the Node engine session before deleting the DB record
+        if ($whatsapp->type === 'qr' && $whatsapp->session_name) {
+            app(\Modules\WhatsAppQR\Services\WhatsAppService::class)->deleteSession($whatsapp->session_name);
         }
 
         $whatsapp->delete();
